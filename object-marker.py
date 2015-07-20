@@ -1,25 +1,25 @@
 #!/usr/bin/python
- 
+
 ###############################################################################
 # Name      : ObjectMarker.py
-# Author    : Python implementation: sqshemet 
+# Author    : Python implementation: sqshemet
 #         Original ObjectMarker.cpp: http://www.cs.utah.edu/~turcsans/DUC_files/HaarTraining/
 # Date      : 7/24/12
-# Description   : Object marker utility to be used with OpenCV Haar training. 
+# Description   : Object marker utility to be used with OpenCV Haar training.
 #         Tested on Ubuntu Linux 10.04 with OpenCV 2.1.0.
 # Usage     : python ObjectMarker.py outputfile inputdirectory
 ###############################################################################
- 
+
 import cv
 import sys
 import os
 import glob
- 
+
 IMG_SIZE = (300,300)
 IMG_CHAN = 3
 IMG_DEPTH = cv.IPL_DEPTH_8U
 current_image = cv.CreateImage(IMG_SIZE, IMG_DEPTH, IMG_CHAN)
-image2 = cv.CreateImage(IMG_SIZE, IMG_DEPTH, IMG_CHAN) 
+image2 = cv.CreateImage(IMG_SIZE, IMG_DEPTH, IMG_CHAN)
 has_roi = False
 roi_x0 = 0
 roi_y0 = 0
@@ -35,7 +35,7 @@ current_img_file_name = ""
 table_file_name = ''
 background_file_name = ''
 image_file_glob = ''
- 
+
 rect_table = {}
 background_files = set()
 
@@ -167,9 +167,9 @@ def on_mouse(event, x, y, flag, params):
 
         # normalize
         if roi_x1 < roi_x0 :
-            roi_x0, roi_x1 = roi_x1, roi_x0 
+            roi_x0, roi_x1 = roi_x1, roi_x0
         if roi_y1 < roi_y0 :
-            roi_y0, roi_y1 = roi_y1, roi_y0 
+            roi_y0, roi_y1 = roi_y1, roi_y0
 
     elif (event == cv.CV_EVENT_RBUTTONDOWN):
         clear_roi()
@@ -178,9 +178,9 @@ def on_mouse(event, x, y, flag, params):
     elif (event == cv.CV_EVENT_MOUSEMOVE):
         if draging:
             redraw()
- 
+
 def main():
- 
+
     global current_image
     global current_img_file_name
     global has_roi
@@ -190,39 +190,39 @@ def main():
     global roi_y1
 
     iKey = 0
-    
+
     files = glob.glob(image_file_glob)
     if len(files) == 0 :
         print "No files match glob pattern"
         return
- 
+
     files = [os.path.abspath(f) for f in files]
     files.sort()
- 
+
     # init GUI
     cv.NamedWindow(window_name, 1)
     cv.SetMouseCallback(window_name, on_mouse, None)
- 
+
     sys.stderr.write("Opening directory...")
     # init output of rectangles to the info file
     #os.chdir(input_directory)
     sys.stderr.write("done.\n")
- 
+
     current_file_index = 0
- 
+
     while True :
 
         current_img_file_name = files[current_file_index]
 
         num_of_rec = 0
         sys.stderr.write("Loading current_image (%d/%d) %s...\n" % (current_file_index + 1, len(files), current_img_file_name))
- 
-        try: 
+
+        try:
             current_image = cv.LoadImage(current_img_file_name, 1)
-        except IOError: 
+        except IOError:
             sys.stderr.write("Failed to load current_image %s.\n" % current_img_file_name)
             return -1
- 
+
         #  Work on current current_image
         #cv.ShowImage(window_name, current_image)
         redraw()
@@ -243,12 +243,13 @@ def main():
         if draging :
             continue
 
-        if iKey == 81:
+        print iKey
+        if iKey == 249:
             current_file_index -= 1
             if current_file_index == -1 :
                 current_file_index = len(files) - 1
             clear_roi()
-        elif iKey == 83:
+        elif iKey == 250:
             current_file_index += 1
             if current_file_index == len(files) :
                 current_file_index = 0
@@ -257,7 +258,7 @@ def main():
             cv.DestroyWindow(window_name)
             return 0
         elif iKey == 97:
-            rect_table.setdefault(current_img_file_name, set()).add((roi_x0, roi_y0, roi_x1 - roi_x0, roi_y1 - roi_y0)) 
+            rect_table.setdefault(current_img_file_name, set()).add((roi_x0, roi_y0, roi_x1 - roi_x0, roi_y1 - roi_y0))
             clear_roi()
             write_rect_table()
             redraw()
@@ -272,7 +273,7 @@ def main():
             write_rect_table()
         elif iKey == 136:
             sys.stderr.write("Skipped %s.\n" % current_file_index)
-        
+
 if __name__ == '__main__':
     print sys.argv
     if (len(sys.argv) != 4):
