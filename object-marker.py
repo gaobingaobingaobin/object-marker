@@ -14,6 +14,7 @@ import cv
 import sys
 import os
 import glob
+import numpy as np
 
 IMG_SIZE = (300,300)
 IMG_CHAN = 3
@@ -191,7 +192,7 @@ def main():
 
     iKey = 0
 
-    files = glob.glob(image_file_glob)
+    files = np.sort(glob.glob(image_file_glob)).tolist()
     if len(files) == 0 :
         print "No files match glob pattern"
         return
@@ -243,7 +244,6 @@ def main():
         if draging :
             continue
 
-        print iKey
         if iKey == 249:
             current_file_index -= 1
             if current_file_index == -1 :
